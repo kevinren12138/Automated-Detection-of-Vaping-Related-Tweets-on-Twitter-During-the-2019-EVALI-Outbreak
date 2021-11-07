@@ -47,7 +47,7 @@ from sklearn.metrics import classification_report, f1_score, accuracy_score, con
 from sklearn.metrics import roc_curve, auc, roc_auc_score
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
-
+'''
 data = pd.read_csv('/Users/yangren/Desktop/random_tweets.csv')
 print(data.shape)
 print(data.columns)
@@ -74,21 +74,6 @@ def remove_emoji(string):
 df1['cleanemoji'] = df1['cleanLinks'].apply(remove_emoji)
 
 df1['cleanmention'] = df1['cleanemoji'].replace("@[A-Za-z0-9]+", "",regex=True)
-df1['cleanmention'] = df1['cleanmention'].replace("www", "",regex=True)
-df1['cleanmention'] = df1['cleanmention'].replace("http", "",regex=True)
-df1['cleanmention'] = df1['cleanmention'].replace("https", "",regex=True)
-df1['cleanmention'] = df1['cleanmention'].replace("com", "",regex=True)
-df1['cleanmention'] = df1['cleanmention'].replace("ly", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("it", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("its", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("bits", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("wh", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("qu", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("via", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("igshid", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("im", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("te", "",regex=True)
-df1['tweet'] = df1['tweet'].replace("you", "",regex=True)
 
 #df1['label'] = '0'
 df1 = df1.drop(['cleanemoji', 'cleanLinks', 'tweet'], axis=1)
@@ -115,31 +100,26 @@ df1 = df1[df1['clean_tweet'].str.len() >= 10]
 data2 = pd.read_csv('/Users/yangren/Desktop/vaping_tweets.csv')
 data.head(10)
 df2 = pd.DataFrame(data = data2)
-df2['tweet'] = df2['tweet'].replace("https", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("http", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("www", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("com", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("ly", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("it", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("its", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("bits", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("wh", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("qu", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("via", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("igshid", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("im", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("te", "",regex=True)
-df2['tweet'] = df2['tweet'].replace("you", "",regex=True)
-df2['clean_tweet'] = df2.tweet.apply(text_preproc)
-df2 = df2.drop(['tweet'], axis=1)
+df2['cleanLinks'] = df2['tweet'].apply(lambda x: re.split('https:\/\/.*', str(x))[0])
+df2['cleanemoji'] = df2['cleanLinks'].apply(remove_emoji)
+df2['cleanmention'] = df2['cleanemoji'].replace("@[A-Za-z0-9]+", "",regex=True)
+df2 = df2.drop(['cleanemoji', 'cleanLinks', 'tweet'], axis=1)
+
+df2['clean_tweet'] = df2.cleanmention.apply(text_preproc)
+df2 = df2.drop(['cleanmention'], axis=1)
 df2['label'] = '1'
 df2['clean_tweet'] = [entry.lower() for entry in df2['clean_tweet']]
 df2['clean_tweet'] = [word_tokenize(entry) for entry in df2['clean_tweet']]
 df2 = df2[df2['clean_tweet'].str.len() >= 10]
-df = pd.concat([df1, df2])
 
-seed = 50
+df = pd.concat([df1, df2])
 df['clean_tweet']=[" ".join(clean_tweet) for clean_tweet in df['clean_tweet'].values]
+df.to_csv('/Users/yangren/Desktop/cleaned_tw.csv')
+'''
+seed = 50 
+data = pd.read_csv('/Users/yangren/Desktop/cleaned_tw.csv')
+df = pd.DataFrame(data = data)
+
 x = df['clean_tweet']
 y = df['label']
 
@@ -154,7 +134,7 @@ x = Tfidf_vect.transform(x)
 print(x)
 feature_names = Tfidf_vect.get_feature_names()
 print(feature_names)
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=50)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=50)
 randomforest = RandomForestClassifier(
                       bootstrap=True,
                       oob_score=True,
@@ -193,23 +173,3 @@ plt.yticks(range(num_features), [feature_names[i] for i in indices[-num_features
 plt.xticks(rotation=90)
 plt.xlabel('Importance')
 plt.show()
-'''
-Tfidf_vect = TfidfVectorizer(max_features=1000)
-Tfidf_vect.fit(df['clean_tweet'])
-x = Tfidf_vect.transform(x)
-# place tf-idf values in a pandas data frame
-# get the first vector out (for the first document)
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-# settings that you use for count vectorizer will go here
-tfidf_vectorizer = TfidfVectorizer(use_idf=True)
-
-# just send in all your docs here
-tfidf_vectorizer_vectors = tfidf_vectorizer.fit_transform(x)
-first_vector_tfidfvectorizer = tfidf_vectorizer_vectors[0]
-
-# place tf-idf values in a pandas data frame
-df = pd.DataFrame(first_vector_tfidfvectorizer.T.todense(), index=tfidf_vectorizer.get_feature_names(),
-                  columns=["tfidf"])
-df.sort_values(by=["tfidf"], ascending=False)
-'''
