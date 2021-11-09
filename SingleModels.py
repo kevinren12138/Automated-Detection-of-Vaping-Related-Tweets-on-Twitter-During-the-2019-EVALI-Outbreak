@@ -135,7 +135,7 @@ for holdouts in combinations(df['month'].unique(), 2):
     X_test = Tfidf_vect.transform(X_test)
 
     param_grid_nb = {'var_smoothing': np.logspace(0,-9, num=100)}
-    nb_grid = GridSearchCV(estimator=GaussianNB(), param_grid=param_grid_nb, verbose=1, cv=10, n_jobs=-1)
+    nb_grid = GridSearchCV(estimator=GaussianNB(), param_grid=param_grid_nb, verbose=1, cv=5, n_jobs=-1)
     nb_grid.fit(X_train.toarray(), y_train)
     print(nb_grid.best_estimator_)
     #GaussianNB(priors=None, var_smoothing=1.0)
@@ -183,7 +183,7 @@ for holdouts in combinations(df['month'].unique(), 2):
                    'min_samples_leaf': min_samples_leaf,
                    'bootstrap': bootstrap}
     rf = RandomForestClassifier()
-    rf_grid = RandomizedSearchCV(estimator=rf, param_distributions=param_grid_rf, n_iter=100, cv=10, verbose=1, random_state=50, n_jobs=-1)
+    rf_grid = RandomizedSearchCV(estimator=rf, param_distributions=param_grid_rf, n_iter=100, cv=5, verbose=1, random_state=50, n_jobs=-1)
     rf_grid.fit(X_train, y_train)
     #print(rf_grid.best_estimator_)
     y_pred = rf_grid.predict(X_test)
@@ -205,7 +205,7 @@ for holdouts in combinations(df['month'].unique(), 2):
     }
 
     xgbr = xgb.XGBRegressor(seed=20)
-    clf = RandomizedSearchCV(estimator=xgbr, param_distributions=param_xgb, scoring='neg_mean_squared_error', n_iter=100, cv=10, verbose=1, n_jobs=-1)
+    clf = RandomizedSearchCV(estimator=xgbr, param_distributions=param_xgb, scoring='neg_mean_squared_error', n_iter=100, cv=5, verbose=1, n_jobs=-1)
     clf.fit(X_train, y_train)
     print("Best parameters:", clf.best_params_)
     print("Lowest RMSE: ", (-clf.best_score_) ** (1 / 2.0))
@@ -223,7 +223,7 @@ for holdouts in combinations(df['month'].unique(), 2):
         'max_iter': np.arange(100, 1000, 100),
         'learning_rate': ['constant', 'adaptive']}
     mlp = MLPClassifier()
-    clf = RandomizedSearchCV(estimator=mlp, param_distributions=param_mlp, n_iter=10, cv=10, verbose=1, n_jobs=-1)
+    clf = RandomizedSearchCV(estimator=mlp, param_distributions=param_mlp, n_iter=10, cv=5, verbose=1, n_jobs=-1)
     clf.fit(X_train, y_train)
     print("Best parameters:", clf.best_params_)
     y_pred = clf.predict(X_test)
@@ -249,7 +249,7 @@ x_train4, x_test4, y_train4, y_test4 = train_test_split(x, y, test_size=0.4, ran
 x_train5, x_test5, y_train5, y_test5 = train_test_split(x, y, test_size=0.5, random_state=50)
 
 param_grid_nb = {'var_smoothing': np.logspace(0, -9, num=100)}
-nb_grid = GridSearchCV(estimator=GaussianNB(), param_grid=param_grid_nb, verbose=1, cv=10, n_jobs=-1)
+nb_grid = GridSearchCV(estimator=GaussianNB(), param_grid=param_grid_nb, verbose=1, cv=5, n_jobs=-1)
 
 nb_grid.fit(x_train1.toarray(), y_train1)
 print(nb_grid.best_params_, ": is the 10% testing best estimator")
@@ -364,7 +364,7 @@ param_grid_rf = {'n_estimators': n_estimators,
                  'min_samples_leaf': min_samples_leaf,
                  'bootstrap': bootstrap}
 rf = RandomForestClassifier()
-rf_grid = RandomizedSearchCV(estimator=rf, param_distributions=param_grid_rf, n_iter=100, cv=10, verbose=1,
+rf_grid = RandomizedSearchCV(estimator=rf, param_distributions=param_grid_rf, n_iter=100, cv=5, verbose=1,
                              random_state=50, n_jobs=-1)
 
 rf_grid.fit(x_train1, y_train1)
@@ -429,7 +429,7 @@ param_xgb = {
 
 xgbr = xgb.XGBRegressor(seed=20)
 clf = RandomizedSearchCV(estimator=xgbr, param_distributions=param_xgb, scoring='neg_mean_squared_error', n_iter=100,
-                         cv=10, verbose=1, n_jobs=-1)
+                         cv=5, verbose=1, n_jobs=-1)
 
 clf.fit(x_train1, y_train1)
 print("Best parameters:", clf.best_params_)
@@ -491,7 +491,7 @@ param_mlp = {
     'max_iter': np.arange(100, 1000, 100),
     'learning_rate': ['constant', 'adaptive']}
 mlp = MLPClassifier()
-clf = RandomizedSearchCV(estimator=mlp, param_distributions=param_mlp, n_iter=10, cv=10, verbose=1, n_jobs=-1)
+clf = RandomizedSearchCV(estimator=mlp, param_distributions=param_mlp, n_iter=10, cv=5, verbose=1, n_jobs=-1)
 
 clf.fit(x_train1, y_train1)
 print("Best parameters:", clf.best_params_)
