@@ -147,7 +147,7 @@ for holdouts in combinations(df['month'].unique(), 2):
     print(f1_score(y_test, y_pred), ": is the NB f1 score")
     
     param_grid_svm = {'kernel': ['rbf', 'poly', 'sigmoid'], 'C': [0.1,1, 10, 100, 1000], 'gamma': [1,0.1,0.01,0.001, 0.0001]}
-    svm_grid = GridSearchCV(SVC(), param_grid_svm, refit=True, verbose=1, cv=10, n_jobs=1)
+    svm_grid = GridSearchCV(SVC(), param_grid_svm, refit=True, verbose=1, cv=5, n_jobs=1)
     svm_grid.fit(X_train, y_train)
     print(svm_grid.best_estimator_)
     y_pred = svm_grid.predict(X_test)
@@ -302,7 +302,7 @@ print(recall_score(y_test5, y_pred5), ": is the NB 50% testing recall score")
 print(f1_score(y_test5, y_pred5), ": is the NB 50% testing f1 score")
 
 param_grid_svm = {'kernel': ['rbf', 'poly', 'sigmoid'], 'C': [0.1,1, 10, 100, 1000], 'gamma': [1,0.1,0.01,0.001, 0.0001]}
-svm_grid = GridSearchCV(SVC(), param_grid_svm, refit=True, verbose=1, cv=10, n_jobs=1)
+svm_grid = GridSearchCV(SVC(), param_grid_svm, refit=True, verbose=1, cv=5, n_jobs=1)
 
 svm_grid.fit(x_train1, y_train1)
 print(svm_grid.best_estimator_)
